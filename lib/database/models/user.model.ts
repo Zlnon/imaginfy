@@ -1,18 +1,9 @@
 //clerkId,email, username, photo, firstName,lastName,planId,creditBalance
 
-import { Schema, model, models,Document } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
-//  interface is not in the video
-interface User {
-    clerkId: string; // Now a string and unique
-    email: string; // Unique
-    username: string; // Unique
-    photo: string; // Now required and a string
-    firstName?: string; // Now optional
-    lastName?: string; // Now optional
-    planId: number; // Has a default value of 1, but required in TypeScript context
-    creditBalance: number; // Has a default value of 10, but required in TypeScript context
-  }
+
+
 
 const UserSchema = new Schema({
   clerkId: { type: String, requird: true,unique:true },
@@ -25,6 +16,6 @@ const UserSchema = new Schema({
   creditBalance: { type: Number, default:10 },
 });
 
-const User = models?.User || model("name", UserSchema);
+const User = models?.User || model("User", UserSchema);
 
 export default User;
