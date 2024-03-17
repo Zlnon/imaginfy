@@ -33,6 +33,7 @@ import { updateCredits } from "@/lib/actions/user.actions";
 import { Divide } from "lucide-react";
 import MediaUploader from "./MediaUploader";
 import TransformedImage from "./TransformedImage";
+import { getCldImageUrl } from "next-cloudinary";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -76,9 +77,30 @@ const TransformationForm = ({
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    setIsSubmittung(true);
+
+    if (data || image) {
+      const transformationUrl = getCldImageUrl({
+        width: image?.wigth,
+        height: image?.height,
+        src: image?.publicId,
+        ...transformationConfig,
+      });
+
+      const imageData = {
+        title: values.title,
+        publicId: image?.publicId,
+        transformationType: type,
+        width: image?.wigth,
+        height: image?.height,
+        config: transformationConfig,
+        secureUrl: image?.secureUrl,
+        transformationUrl,
+        aspectRation: values.aspectRatio,
+        prompt: values.prompt,
+        color: values.color,
+      };
+    }
   }
 
   const onSelectFieldHandler = (
@@ -125,7 +147,7 @@ const TransformationForm = ({
     setNewtransformation(null);
 
     startTransition(async () => {
-       await updateCredits(userId,-1)
+      await updateCredits(userId, -1);
     });
   };
 
@@ -219,30 +241,27 @@ const TransformationForm = ({
 
         <div className="media-uploader-field">
           <CustomField
-          control={form.control}
-          name="publicId"
-          className="flex size-full flex-col"
-          render={({field})=>(
-            <MediaUploader
-            onValueChnage={field.onChange}
-            setImage={setImage}
-            publicId={field.value}
-            image={image}
-            type={type}
-
-            />
-          )}
-
+            control={form.control}
+            name="publicId"
+            className="flex size-full flex-col"
+            render={({ field }) => (
+              <MediaUploader
+                onValueChnage={field.onChange}
+                setImage={setImage}
+                publicId={field.value}
+                image={image}
+                type={type}
+              />
+            )}
           />
           <TransformedImage
-          image={image}
-          type={type}
-          title={form.getValues().title}
-          isTransforming={isTransforming}
-          setIsTransforming={setIsTransforming}
-          transformationConfig={transformationConfig}
+            image={image}
+            type={type}
+            title={form.getValues().title}
+            isTransforming={isTransforming}
+            setIsTransforming={setIsTransforming}
+            transformationConfig={transformationConfig}
           />
-
         </div>
 
         <div className=" flex flex-col gap-4">
