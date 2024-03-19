@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   aspectRatioOptions,
+  creditFee,
   defaultValues,
   transformationTypes,
 } from "@/constants";
@@ -36,6 +37,8 @@ import TransformedImage from "./TransformedImage";
 import { getCldImageUrl } from "next-cloudinary";
 import { addImage, updateImage } from "@/lib/actions/image.action";
 import { useRouter } from "next/navigation";
+import { Crimson_Pro } from "next/font/google";
+import { InsufficientCreditsModal } from "./InsufficientCreditsModal";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -99,7 +102,7 @@ const TransformationForm = ({
         width: image?.wigth,
         height: image?.height,
         config: transformationConfig,
-        secureURL: image?.secureUrl,
+        secureURL: image?.secureURL,
         transformationURL:transformationUrl,
         aspectRatio: values.aspectRatio,
         prompt: values.prompt,
@@ -191,13 +194,15 @@ const TransformationForm = ({
     setNewtransformation(null);
 
     startTransition(async () => {
-      await updateCredits(userId, -1);
+      await updateCredits(userId, creditFee);
     });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {creditBalance< Math.abs(creditFee) && <InsufficientCreditsModal/>}
+
         <CustomField
           control={form.control}
           name="title"
