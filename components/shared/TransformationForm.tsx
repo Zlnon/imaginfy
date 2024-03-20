@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { startTransition, useState, useTransition } from "react";
+import { startTransition, useEffect, useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import { updateCredits } from "@/lib/actions/user.actions";
 import { Divide } from "lucide-react";
@@ -99,7 +99,7 @@ const TransformationForm = ({
         title: values.title,
         publicId: image?.publicId,
         transformationType: type,
-        width: image?.wigth,
+        width: image?.width,
         height: image?.height,
         config: transformationConfig,
         secureURL: image?.secureURL,
@@ -197,6 +197,12 @@ const TransformationForm = ({
       await updateCredits(userId, creditFee);
     });
   };
+
+  useEffect(()=>{
+    if(image&& (type==='restore'||type ==='removeBackground')){
+      setNewtransformation(transformationType.config)
+    }
+  },[image,transformationType.config,type])
 
   return (
     <Form {...form}>
